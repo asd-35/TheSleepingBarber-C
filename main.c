@@ -21,19 +21,23 @@ void* Barber(){
 
         sem_wait(&controlSeats);
         sem_wait(&CustReady);
+        usleep(10000);
         seats--;
         sem_post(&controlSeats);
 
         pthread_mutex_lock(&lock);
+
         printf("Barber function : Removed Customer Barber Works...\n");
-        usleep(100000);
+
         pthread_mutex_unlock(&lock);
 
         sem_post(&BarberReady);
      }else{
 
-        usleep(100000);
+
         printf("Barber function :Barber sleeps...\n");
+        usleep(10000);
+        sem_post(&BarberReady);
 
      }
 
@@ -49,7 +53,7 @@ void* Customer(){
 
         sem_wait(&controlSeats);
         seats++;
-
+        //usleep(100000);
         printf("Customer Function :Added Customer Filling seat %d \n",seats);
         sem_post(&controlSeats);
         sem_post(&CustReady);
@@ -61,7 +65,8 @@ void* Customer(){
 
 
         printf("Customer Function :Customer tried to enter but there were no seats :( \n");
-
+        usleep(10000);
+        sem_post(&BarberReady);
         }
 
     }

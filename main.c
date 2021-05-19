@@ -19,20 +19,22 @@ void* Barber(){
     while(1){
      if(seats > 0){
 
-        sem_wait(&CustReady);
         sem_wait(&controlSeats);
+        sem_wait(&CustReady);
         seats--;
         sem_post(&controlSeats);
 
         pthread_mutex_lock(&lock);
-        printf("Barber function :Barber Works...\n");
+        printf("Barber function : Removed Customer Barber Works...\n");
         usleep(100000);
         pthread_mutex_unlock(&lock);
 
+        sem_post(&BarberReady);
      }else{
-        pthread_mutex_lock(&lock);
+
+        usleep(100000);
         printf("Barber function :Barber sleeps...\n");
-        pthread_mutex_unlock(&lock);
+
      }
 
     }
@@ -42,16 +44,23 @@ void* Barber(){
 void* Customer(){
     while(1){
 
-        if(seats < 4){
+
+        if(seats < 3){
+
         sem_wait(&controlSeats);
         seats++;
-        usleep(500);
+
+        printf("Customer Function :Added Customer Filling seat %d \n",seats);
         sem_post(&controlSeats);
         sem_post(&CustReady);
 
+        sem_wait(&BarberReady);
 
-        printf("Customer Function :Filling seat %d \n",seats);
 
+        }else{
+
+
+        printf("Customer Function :Customer tried to enter but there were no seats :( \n");
 
         }
 
